@@ -1,5 +1,5 @@
 ---
-title: "Practical Machine Learning"
+title: "Practical Machine Learning - Course Project"
 author: "Carlos Cunha"
 date: "November 21, 2015"
 output: html_document
@@ -8,6 +8,23 @@ keep_md: yes
 
 # Objectives
 
+<p>
+This report was created for <b>Practical Machine Learning Course</b> project of the Johns Hopkins University (Bloomberg School of Public Health) Data Science Specialization on Coursera.org, and it aims to present all steps taken to predict in which way a series of execise were performed by subjects - data and definition used herein can be found at <b>Human Activity Recognition</b> web page (<a href="http://groupware.les.inf.puc-rio.br/har">here</a>).
+</p>
+
+<p>
+To facilitate the understanding and reproducibility, all files were copied to <a href="https://github.com/ceacunha/PMLProject">this</a> <i>GitHub</i> repository. In the repo, one will find:
+</p>
+
+- <b>data directory</b>: used to archive data files used for training (originaly from <a href="https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv">here</a>) and test (originaly from <a href="https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv">here</a>) of machine learning algorithms;
+
+- <b>output directory</b>: used to archive resulting files from prediction process;
+
+- <b>project_script.R</b>: original and complete R programming language script;
+
+- <b>report.Rmd</b>: R markdown file from which this report is created; 
+
+- <b>report.html</b>: this report.
 
 # Configuration
 
