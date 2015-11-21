@@ -71,21 +71,42 @@ img {
 <div id="objectives" class="section level1">
 <h1>Objectives</h1>
 <p>
-This report was created for <b>Practical Machine Learning Course</b> project of the Johns Hopkins University (Bloomberg School of Public Health) Data Science Specialization on Coursera.org, and it aims to present all steps taken to predict in which way a series of execise were performed by subjects - data and definition used herein can be found at <b>Human Activity Recognition</b> web page (<a href="http://groupware.les.inf.puc-rio.br/har">here</a>).
+This report was created for <strong>Practical Machine Learning Course</strong> project of the Johns Hopkins University (Bloomberg School of Public Health) Data Science Specialization on Coursera.org, and it aims to present all steps taken to predict in which way a series of execise were performed by subjects - data and definition used herein can be found at <strong>Human Activity Recognition</strong> (HAR) web page (<a href="http://groupware.les.inf.puc-rio.br/har">here</a>).
 </p>
 <p>
-To facilitate the understanding and reproducibility, all files were copied to <a href="https://github.com/ceacunha/PMLProject">this</a> <i>GitHub</i> repository. In the repo, one will find:
+To facilitate the understanding and reproducibility, all files were copied to <a href="https://github.com/ceacunha/PMLProject">this</a> <em>GitHub repository</em>. In the repo, one will find:
 </p>
 <ul>
-<li><p><b>data directory</b>: used to archive data files used for training (originaly from <a href="https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv">here</a>) and test (originaly from <a href="https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv">here</a>) of machine learning algorithms;</p></li>
-<li><p><b>output directory</b>: used to archive resulting files from prediction process;</p></li>
-<li><p><b>project_script.R</b>: original and complete R programming language script;</p></li>
-<li><p><b>report.Rmd</b>: R markdown file from which this report is created;</p></li>
-<li><p><b>report.html</b>: this report.</p></li>
+<li><p><strong>data directory</strong>: used to archive data files used for training (originaly from <a href="https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv">here</a>) and test (originaly from <a href="https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv">here</a>) of machine learning algorithms;</p></li>
+<li><p><strong>output directory</strong>: used to archive resulting files from prediction process;</p></li>
+<li><p><strong>project_script.R</strong>: original and complete <em>R programming language</em> script;</p></li>
+<li><p><strong>report.Rmd</strong>: R markdown file from which this report is created;</p></li>
+<li><p><strong>report.html</strong>: this report.</p></li>
 </ul>
 </div>
 <div id="configuration" class="section level1">
 <h1>Configuration</h1>
+<p>
+First and foremost, all needed libraries are loaded into <em>R</em> environment. Only the <em>caret</em> and <em>randomForest</em> packages are necessary, the former provides functions and structure widely used for machine learning execution and the latter provides the chosen algorithm implementation.
+</p>
+<pre class="r"><code>library(caret)
+library(randomForest)</code></pre>
+<p>
+Once the <em>R</em> environment is set, file directories to store both input and output files are created - <em>data</em> and <em>output</em> respectively.
+</p>
+<pre class="r"><code>dir.create(&quot;data&quot;)
+dir.create(&quot;output&quot;)</code></pre>
+<p>
+As directory structure is placed, input files for training and test machine learning execution are downloaded from HAR web page and stored on <em>data</em> directory.
+</p>
+<pre class="r"><code>trainingFileURL &lt;- &quot;https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv&quot;
+download.file(trainingFileURL, destfile = &quot;data/training.csv&quot;, method = &quot;curl&quot;, quiet = TRUE)
+
+testFileURL &lt;- &quot;https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv&quot;
+download.file(testFileURL, destfile = &quot;data/test.csv&quot;,method = &quot;curl&quot;, quiet = TRUE)</code></pre>
+<p>
+Finally, with <em>R</em> environment and directory structure and files in place, one can turn to machine learning and prediction processes.
+</p>
 </div>
 <div id="training" class="section level1">
 <h1>Training</h1>

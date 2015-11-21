@@ -9,25 +9,58 @@ keep_md: yes
 # Objectives
 
 <p>
-This report was created for <b>Practical Machine Learning Course</b> project of the Johns Hopkins University (Bloomberg School of Public Health) Data Science Specialization on Coursera.org, and it aims to present all steps taken to predict in which way a series of execise were performed by subjects - data and definition used herein can be found at <b>Human Activity Recognition</b> web page (<a href="http://groupware.les.inf.puc-rio.br/har">here</a>).
+This report was created for **Practical Machine Learning Course** project of the Johns Hopkins University (Bloomberg School of Public Health) Data Science Specialization on Coursera.org, and it aims to present all steps taken to predict in which way a series of execise were performed by subjects - data and definition used herein can be found at **Human Activity Recognition** (HAR) web page (<a href="http://groupware.les.inf.puc-rio.br/har">here</a>).
 </p>
 
 <p>
-To facilitate the understanding and reproducibility, all files were copied to <a href="https://github.com/ceacunha/PMLProject">this</a> <i>GitHub</i> repository. In the repo, one will find:
+To facilitate the understanding and reproducibility, all files were copied to <a href="https://github.com/ceacunha/PMLProject">this</a> *GitHub repository*. In the repo, one will find:
 </p>
 
-- <b>data directory</b>: used to archive data files used for training (originaly from <a href="https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv">here</a>) and test (originaly from <a href="https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv">here</a>) of machine learning algorithms;
+- **data directory**: used to archive data files used for training (originaly from <a href="https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv">here</a>) and test (originaly from <a href="https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv">here</a>) of machine learning algorithms;
 
-- <b>output directory</b>: used to archive resulting files from prediction process;
+- **output directory**: used to archive resulting files from prediction process;
 
-- <b>project_script.R</b>: original and complete R programming language script;
+- **project_script.R**: original and complete *R programming language* script;
 
-- <b>report.Rmd</b>: R markdown file from which this report is created; 
+- **report.Rmd**: R markdown file from which this report is created; 
 
-- <b>report.html</b>: this report.
+- **report.html**: this report.
 
 # Configuration
 
+<p>
+First and foremost, all needed libraries are loaded into *R* environment. Only the *caret* and *randomForest* packages are necessary, the former provides functions and structure widely used for machine learning execution and the latter provides the chosen algorithm implementation.
+</p>
+
+``` {r loadingLibraries, message=FALSE, warning=FALSE}
+library(caret)
+library(randomForest)
+```
+
+<p>
+Once the *R* environment is set, file directories to store both input and output files are created - *data* and *output* respectively.
+</p>
+
+``` {r creatingDirectory, message=FALSE, warning=FALSE}
+dir.create("data")
+dir.create("output")
+```
+
+<p>
+As directory structure is placed, input files for training and test machine learning execution are downloaded from HAR web page and stored on *data* directory.
+</p>
+
+``` {r downloadingFiles, message=FALSE, warning=FALSE}
+trainingFileURL <- "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv"
+download.file(trainingFileURL, destfile = "data/training.csv", method = "curl", quiet = TRUE)
+
+testFileURL <- "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv"
+download.file(testFileURL, destfile = "data/test.csv",method = "curl", quiet = TRUE)
+```
+
+<p>
+Finally, with *R* environment, directory structure and files in place, one can turn to machine learning and prediction processes.
+</p>
 
 # Training
 
