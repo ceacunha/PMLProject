@@ -6,14 +6,23 @@ library(randomForest)
 workspace <- "."
 setwd(workspace)
 
-# function provided by project definition page
-# function paste0's parameter altered to include output directory 
-pml_write_files = function(x){
+# function extracted from course's project definition page
+pml_write_files <- function(x){
     n = length(x)
     for(i in 1:n){
+        # function paste0's input parameter altered from original to include output directory
         filename = paste0("output/","problem_id_",i,".txt")
-        write.table(x[i],file=filename,quote=FALSE,row.names=FALSE,col.names=FALSE)
+        write.table(x[i], file=filename, quote=FALSE, row.names=FALSE,
+                    col.names=FALSE)
     }
+}
+
+# function defined to return the density of NA values within a set of values
+columnThresholdNA <- function(x){
+    l <- length(x)
+    tNA <- sum(is.na(x))
+    result <- tNA / l
+    result
 }
 
 # verify if the data directory was created
@@ -41,18 +50,21 @@ if(!file.exists("data/test.csv")){
 }
 
 # loading training data
+# uploading training data
 originalTraining <-
     read.csv(file = "data/training.csv", stringsAsFactors = FALSE,
-             na.strings = c("NA", "", " "))
+             na.strings = c("NA", ""))
+
+# transforming chr-type classe column into factor-type data
 originalTraining$classe <- factor(originalTraining$classe)
 
-# removing descriptive and identification column
-reducedTraining <- originalTraining[,-(1:7)]
+# removing first seven columns
+finalTraining <- originalTraining[,-(1:7)]
 
-# identifying and removing columns made primarily of NA's values
+# removing high density NA columns
 finalTraining <-
-    reducedTraining[,which(apply(
-        reducedTraining, 2, function (x) {sum(is.na(x))}) == 0)]
+    finalTraining[,which(apply(finalTraining, 2,
+                               FUN = columnThresholdNA) < 0.95)]
 
 # creating training and test sets from the finalTraining in order to
 # create the best decision model
@@ -69,7 +81,7 @@ confusionMatrix(trainTest$classe, trainTestPredict)
 # loading and reducing test data
 testData <-
     read.csv(file = "data/test.csv", stringsAsFactors = FALSE,
-             na.strings = c("NA", "", " "))
+             na.strings = c("NA", ""))
 testData <- testData[,-(1:7)]
 testData <-
     testData[,which(apply(

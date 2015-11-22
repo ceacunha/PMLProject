@@ -38,6 +38,30 @@ library(randomForest)
 ```
 
 <p>
+To finalize *R* environment set up, the following functions were defined. These will be used within the activities in the following sections of this report.
+</p>
+
+``` {r auxiliaryFunctions, message=FALSE, warning=FALSE}
+# function extracted from course's project definition page
+pml_write_files <- function(x){
+    n = length(x)
+    for(i in 1:n){
+        # function paste0's input parameter altered from original to include output directory
+        filename = paste0("output/","problem_id_",i,".txt")
+        write.table(x[i],file=filename,quote=FALSE,row.names=FALSE,col.names=FALSE)
+    }
+}
+
+# function defined to return the density of NA values within a set of values
+columnThresholdNA <- function(x){
+    l <- length(x)
+    tNA <- sum(is.na(x))
+    result <- tNA / l
+    result
+}
+```
+
+<p>
 Once the *R* environment is set, file directories to store both input and output files are created - *data* and *output* respectively.
 </p>
 
@@ -64,8 +88,116 @@ Finally, with *R* environment, directory structure and files in place, one can t
 
 # Training
 
+<p>
+In order to to find the best prediction model, first, the data structure is explored and analyzed.
+</p>
+
+``` {r fileExploration}
+fileDataExploration <- read.csv(file = "data/training.csv", stringsAsFactors = FALSE)
+str(fileDataExploration)
+```
+
+<p>
+Analyzing the structure shown above, one may conclude:
+</p>
+
+- The first seven columns contain qualitativy/identification data, thus, not necessary in the prediction model;
+
+- In many *chr-type* classified columns, the empty string is widely recorded. This records won't add value to a prediction model if highly presented within a column, thus, columns with high *NA* density (number of *NA* > 95% total records) will be eliminated.
+
+<p>
+Given the premises above, the training set is loaded once more and reduced to the necessary data for prediction.
+</p>
+
+``` {r originalTraining}
+# uploading training data
+originalTraining <- read.csv(file = "data/training.csv", stringsAsFactors = FALSE, na.strings = c("NA", ""))
+
+# transforming chr-type classe column into factor-type data
+originalTraining$classe <- factor(originalTraining$classe)
+
+# removing first seven columns
+finalTraining <- originalTraining[,-(1:7)]
+
+# removing high density NA columns
+finalTraining <- finalTraining[,which(apply(finalTraining, 2, FUN = columnThresholdNA) < 0.95)]
+```
+
+<p>
+As the *finalTraining* dataset is established, we begin by creating subsets for creating the prediction model (training amomng training) and applying the model to certify accuracy (testing). Subsets are created using *createDataPartition* function from *caret* package in order to obtain better sampling and allow reproducibility.
+</p>
+
+``` {r trainDataPartitioning}
+set.seed(68900)
+
+isTrain <- createDataPartition(finalTraining$classe, p=.7, list = FALSE)
+trainBase <- finalTraining[isTrain,]
+trainTest <- finalTraining[-isTrain,]
+```
+
+<p>
+The *trainBase* dataset will be used for machine learning and model creation. For that matter, the *randomForest* function from the *randomForest* package was used since it implements an algorithm for Random Forest approach. This approach was chosen beacuse it increases accuracy by the result of creating multiple decision trees and selecting the best path.
+</p>
+
+``` {r modelCreation}
+mRF <- randomForest(formula = classe ~ ., data = trainBase)
+mRF
+```
+
+<p>
+The function turned out a very solid model. After creating more than *500 classification trees*, the final model reached an *estimate error of .53%* on a *maximum classification error of 1.28%* for D-type exercise. With such accuracy, *trainTest* dataset will be used to ratify its accuracy and prediction capabilities.
+</p>
+
+``` {r trainDataPrediction}
+trainTestPredict <- predict(mRF, trainTest)
+confusionMatrix(trainTest$classe, trainTestPredict)
+```
+
+<p>
+As the results from predicting *trainTest* values are compared with the actual results, the model reached a **99.58% accuracy** level with a *95% confidence interval* ranging from *99.37% and 99.72%* for correct prediction.
+</p>
+
+<p>
+With such numbers, the *Test stage* will be conducted **WITH** prediction model above created above.
+</p>
 
 # Test
 
+<p>
+To begin the Test Stage, a test dataset will be structured using the same caracteristcs and process used on the train datasets, thus:
+</p>
+
+``` {r testDataLoading}
+# loading test data
+testData <- read.csv(file = "data/test.csv", stringsAsFactors = FALSE, na.strings = c("NA", ""))
+
+# removing first seven columns
+testData <- testData[,-(1:7)]
+
+# removing high density NA columns
+testData <- testData[,which(apply(testData, 2, FUN = columnThresholdNA) < 0.95)]
+```
+
+<p>
+Now that the *testData* was created, it can be used as parameter in the *predict* function together with the *mRF* model created in the Train Section.
+</p>
+
+``` {r predictingResults}
+testPredict <- predict(mRF, testData)
+```
 
 # Results
+
+<p>
+The final results were used to create returning result files formatted as defined in the course's project web page.
+</p>
+
+``` {r fileUpload}
+pml_write_files(testPredict)
+```
+
+<p>
+As can be seen in the figure bellow, all predicted values yield correct results, thus, indicating that the model was well suited to address the problem. 
+</p>
+
+<img src="output/result.grade.png">
